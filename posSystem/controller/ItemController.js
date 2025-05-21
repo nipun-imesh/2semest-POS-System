@@ -106,9 +106,7 @@ function loadItems() {
             <td>${item.name}</td>
             <td>${item.price}</td>
             <td>${item.quantity}</td>
-            <td>
-                <button class="action-btn delete-btn" onclick="deleteItem('${item.id}')">Delete</button>
-            </td>
+           
         </tr>`;
         $("#item-table").append(row);
     });

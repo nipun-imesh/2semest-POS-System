@@ -7,6 +7,9 @@ $(document).ready(function () {
 
     // Populate customer dropdown on load
     populateCustomerDropdown();
+    
+    // Load customers initially
+    loadCustomers();
 
     // Save customer
     $("#save-customer").on("click", function () {
@@ -86,13 +89,24 @@ $(document).ready(function () {
     // Clear (delete) customer
     $("#clear-customer").on("click", function () {
         let id = $("#customer-id").val();
-        deleteCustomer(id);
+        if (id) {
+            deleteCustomer(id);
+        } else {
+            Swal.fire({
+                title: "Error!",
+                text: "No customer selected",
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+        }
     });
 
     // Handle table row click for editing
     $("#customer-table").on('click', 'tr', function () {
         let idx = $(this).index();
-        editCustomer(idx);
+        if (idx >= 0) {
+            editCustomer(idx);
+        }
     });
 });
 
@@ -115,6 +129,8 @@ function loadCustomers() {
 
 // Edit customer
 function editCustomer(index) {
+    if (index < 0 || index >= customer_db.length) return;
+    
     let obj = customer_db[index];
     $("#customer-id").val(obj.id);
     $("#customer-name").val(obj.name);
@@ -124,8 +140,8 @@ function editCustomer(index) {
     $("#clear-customer").removeAttr("disabled");
 }
 
-// Delete customer
-function deleteCustomer(id) {
+// Make deleteCustomer globally accessible
+window.deleteCustomer = function(id) {
     let index = customer_db.findIndex(customer => customer.id === id);
     if (index !== -1) {
         customer_db.splice(index, 1);
@@ -154,9 +170,12 @@ function deleteCustomer(id) {
 
 // Populate customer dropdown
 export function populateCustomerDropdown() {
-    $("#order-customer-id").empty();
-    $("#order-customer-id").append('<option value="">Select Customer</option>');
-    customer_db.forEach(customer => {
-        $("#order-customer-id").append(`<option value="${customer.id}">${customer.id} - ${customer.name}</option>`);
-    });
+    // Check if dropdown exists
+    if ($("#order-customer-id").length) {
+        $("#order-customer-id").empty();
+        $("#order-customer-id").append('<option value="">Select Customer</option>');
+        customer_db.forEach(customer => {
+            $("#order-customer-id").append(`<option value="${customer.id}">${customer.id} - ${customer.name}</option>`);
+        });
+    }
 }
